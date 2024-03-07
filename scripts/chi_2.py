@@ -20,7 +20,7 @@ with fitsio.FITS(args.in_file, "r") as h:
 # from that script
 keep_range = np.s_[50:11100]
     
-V_X = V * X
+V_X = np.sqrt(V) * X
 W_noisy = np.load("templates/W_nearly_noisy.npy")
 W_noiseless  = np.load("templates/W_nearly_noiseless.npy")
 
@@ -28,7 +28,7 @@ print("Fitting noise-free templates")
 H_noiseless_nnls = np.zeros((W_noiseless.shape[-1], V_X.shape[-1]))
 chi_2_noiseless_nnls = []
 for i in range(V_X.shape[-1]):
-    W = V[keep_range, i][:, None] * W_noiseless
+    W = np.sqrt(V[keep_range, i][:, None]) * W_noiseless
     H_0, _ = nnls(W, V_X[keep_range, i])
     H_noiseless_nnls[:, i] = H_0
 
@@ -36,7 +36,7 @@ print("Fitting noisy templates")
 H_noisy_nnls = np.zeros((W_noisy.shape[-1], V_X.shape[-1]))
 chi_2_noisy_nnls = []
 for i in range(V_X.shape[-1]):
-    W = V[keep_range, i][:, None] * W_noisy
+    W = np.sqrt(V[keep_range, i][:, None]) * W_noisy
     H_0, _ = nnls(W, V_X[keep_range, i])
     H_noisy_nnls[:, i] = H_0
     
